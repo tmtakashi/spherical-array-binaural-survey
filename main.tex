@@ -1,0 +1,142 @@
+\documentclass[a4paper,12pt]{jsarticle}
+\usepackage{amsmath}
+
+\begin{document}
+
+\title{球状マイクロホンアレイ信号のバイノーラル再生について}
+\author{皆川孝志}
+\date{\today}
+\maketitle
+
+本資料では球状マイクロホンアレイ信号をバイノーラル再生する手法について，\cite{Andersson_undated-qg}を中心に紹介する．
+
+\section{はじめに}
+従来のバイノーラル録音ではダミーヘッドを用いて行うものが多いが，
+ダミーヘッドを用いて行うバイノーラル録音ではある一方向に関する信号しか再生することができない．
+そこで，音場の任意の方向におけるバイノーラル信号を再生するために原音場の信号や頭部伝達関数の球面調和展開を利用する手法が提案されている\cite{Andersson_undated-qg}, \cite{Noisternig2003-ug}, \cite{Otani2020-cg}, \cite{Schorkhuber2018-ql}, \cite{Zaunschirm2018-mn}．
+
+本資料では球状マイクロホンアレイで録音した原音場における信号をバイノーラル再生する手法について，\cite{Andersson_undated-qg}を中心にその一部を紹介する．
+
+\section{理論}
+以下，\cite{Andersson_undated-qg}を参考に球状マイクロホンアレイ信号および頭部伝達関数からバイノーラル信号を得るための理論について述べる．
+
+\subsection{球面調和関数}
+波動方程式
+\begin{equation}
+    \label{wave-equation}
+    \nabla^{2} p-\frac{1}{c^{2}} \frac{\partial^{2} p}{\partial t^{2}}=0
+\end{equation}
+
+に支配される音場について音圧$p$が球座標系で$p(r, \theta, \varphi, t) = R(r) \Theta(\theta) \Phi(\varphi) T(t) $の形に変数分離できると仮定し，両辺の時間-周波数に関するフーリエ変換をとると式\ref{wave-equation}から
+\begin{align*}
+    \frac{d}{d r}\left(r^{2} \frac{d R}{d r}\right)+\left(k^{2} r^{2}-n(n+1)\right) R                                                                    & =0 \\
+    \frac{1}{\sin \theta} \frac{d}{d \theta}\left(\sin \theta \frac{d \Theta}{d \theta}\right)+\left(n(n+1)-\frac{m^{2}}{\sin ^{2} \theta}\right) \theta & =0 \\
+    \frac{d^{2} \Phi}{d \varphi^{2}}+m^{2} \Phi                                                                                                          & =0
+\end{align*}
+
+が得られる．これらの微分方程式の解は動径方向，角度方向についてそれぞれ得られる．動径方向については解として以下の第１種および第２種球ベッセル関数によって与えられる．
+
+\begin{align*}
+    j_{n}(k r) & =\sqrt{\frac{\pi}{2 k r}} J_{n+1 / 2}(k r) \\
+    y_{n}(k r) & =\sqrt{\frac{\pi}{2 k r}} Y_{n+1 / 2}(k r)
+\end{align*}
+
+ここで$J, Y$はそれぞれ第１種および第２種ベッセル関数である．角度成分に関しては，球面調和関数$Y_{n}^{m}(\theta, \varphi)$が用いられるが，その具体的な式は文献によって異なる．代用的なものとして以下の３つの式が用いられている．\cite{Andersson_undated-qg}では式\ref{complex-asymmetric}は複素非対称型(complex asymmetric)，式\ref{complex-symmetric}は複素対象型(complex symmetric)，式\ref{real-convention}は実数型(real convention)と呼んでいる．
+\begin{align}
+    Y_{n}^{m} & =\sqrt{\frac{2 n+1}{4 \pi} \frac{(n-m) !}{(n+m) !}} P_{n}^{m}(\cos \theta) e^{i m \varphi} \label{complex-asymmetric}                                          \\
+    Y_{n}^{m} & =(-1)^{m} \sqrt{\frac{2 n+1}{4 \pi} \frac{(n-|m|) !}{(n+|m|) !}} P_{n}^{|m|}(\cos \theta) e^{i m \varphi}  \label{complex-symmetric}                           \\
+    Y_{n}^{m} & =(-1)^{m} \sqrt{\frac{2 n+1}{4 \pi} \frac{(n-|m|) !}{(n+|m|) !}} P_{n}^{|m|}(\cos \theta) \cdot \left\{\begin{array}{ll}
+        \sqrt{2} \cos (m \phi), & m>0 \\
+        1,                      & m=0 \\
+        \sqrt{2} \sin (m \phi), & m<0
+    \end{array}\right.\label{real-convention} \\
+\end{align}
+
+これらの球面調和関数はすべて正規直交系であり，単位球面$S$，微小角度要素$d\Omega$について以下が成り立つ．
+$$
+    \int_{S} Y_{n}^{m}\left(Y_{n^{\prime}}^{m^{\prime}}\right)^{*} d \Omega=\delta_{n, n^{\prime}} \delta_{m, m^{\prime}}
+$$
+
+また，球面調和関数の複素共役は複素非対称型では
+$$
+    \left(Y_{n}^{m}\right)^{*}=(-1)^{m} Y_{n}^{-m}
+$$
+となり，複素対象型では
+$$
+    \left(Y_{n}^{m}\right)^{*}=Y_{n}^{-m}
+$$
+となる．自明であるが，実数型の球面調和関数とその複素共役は等しい値をとる．
+
+\subsection{球面調和関数展開}
+波動方程式を満たす任意の関数$f$は球面調和関数の線形結合で表せる．すなわち，展開係数$P_{nm}$について以下が成り立つ．
+\begin{equation}
+    \label{spherical-expansion}
+    f=\sum_{n=0}^{\infty} \sum_{m=-n}^{n} P_{n m} Y_{n}^{m}
+\end{equation}
+
+展開係数$P_{nm}$を得るには，両辺の$Y_{n}^{m}$との内積を取り，以下の積分を実行すればよい．
+
+\begin{equation}
+    \label{expansion-integral}
+    P_{n m}=\int_{S} f(\Omega, \omega) Y_{n}^{m}(\Omega)^{*} d \Omega
+\end{equation}
+
+この積分により得られる$P_{nm}$の組は設定した球面$S$によって異なり，異なる$P_{nm}$の組同士の関係は波動方程式の動径方向の解によって定義される．
+$S$が開球の場合，異なる半径$r, r_0$を持つ球面上の積分で得られた展開係数$P_{nm}(r), P_{nm}(r_0)$間の関係は
+$$
+    P_{n m}(r)=\frac{j_{n}(k r)}{j_{n}\left(k r_{0}\right)} P_{n m}\left(r_{0}\right)
+$$
+となる\cite{EGW99}．$S$が剛球の場合や$f$が音圧を表さない場合(カージオイド型の指向性をもつマイクロホンで収録した信号など)は異なる関係式で表される．
+
+式\ref{expansion-integral}における球面$S$の特性の違いを吸収するフィルタとして，動径フィルタ(radial filter)$d_n$が導入される．
+開球面については，
+$$
+    d_{n}=\frac{1}{4 \pi i^{n} j_{n}\left(k r_{0}\right)}
+$$
+被展開関数$f$が音圧と音圧勾配の組み合わせである場合は
+$$
+    d_{n}=\frac{1}{2 \pi i^{n}\left(j_{n}\left(k r_{0}\right)-i j_{n}^{\prime}\left(k r_{0}\right)\right)}
+$$
+剛球面については
+$$
+    d_{n}=\frac{1}{4 \pi i^{n}\left(j_{n}\left(k r_{0}\right)-\frac{j_{n}^{\prime}\left(k r_{0}\right)}{h_{n}^{\prime(2)}\left(k r_{0}\right)} h_{n}^{(2)}\left(k r_{0}\right)\right)}
+$$
+となる．なお，$h_{n}^{(2)}$は第２種球ハンケル関数である．
+
+\subsection{平面波分解}
+波動方程式の解の１つの形として平面波がある．平面波の和も波動方程式を満たすため，波動方程式を満たす任意の関数は平面波の線形結合で表せると考えられる．いま，連続面を考えると波動方程式を満たす関数$f$は以下のように書ける．
+\begin{equation}
+    \label{plane-wave-decomposition}
+    f(\omega, \Omega)=\int_{S} D\left(\omega, \Omega^{\prime}\right) P\left(\Omega^{\prime}, \Omega\right) d S
+\end{equation}
+
+ここで，$P$は角度$\Omega$で観測される入射角$\Omega^\prime$の大きさ１の平面波を表し，$D$は角周波数$\omega$における入射角$\Omega^\prime$の大きさを表す．平面波$P$は開球面において以下のように球面調和展開できる．
+
+\begin{equation}
+    \label{P_decomposition}
+    P\left(\Omega^{\prime}, \Omega\right)=4 \pi \sum_{n=0}^{\infty} \sum_{m=-n}^{n} i^{n} j_{n}(k r) Y_{n}^{m}(\Omega) Y_{n}^{m *}\left(\Omega^{\prime}\right)
+\end{equation}
+
+重み係数$D$を
+\begin{equation}
+    \label{D_decomposition}
+    D\left(\omega, \Omega^{\prime}\right)=\sum_{n=0}^{\infty} \sum_{m=-n}^{n} \frac{1}{4 \pi i^{n} j_{n}(k r)} P_{n m}(\omega) Y_{n}^{m}\left(\Omega^{\prime}\right)
+\end{equation}
+のように与え，式\ref{P_decomposition}と式\ref{D_decomposition}を式\ref{plane-wave-decomposition}に代入すれば，結局
+$$
+    f(\omega, \Omega)=\sum_{n=0}^{\infty} \sum_{m=-n}^{n} P_{n m}(\omega) Y_{n}^{m}(\Omega)
+$$
+となり，式\ref{spherical-expansion}と同じ式が得られる．$D$は$f$について各入射方向の平面波が与える寄与を表し，$D$を得る過程を平面波分解(plane wave decomposition)と呼ぶ．
+$f$が開球面上にない場合，動径フィルタ$d_n$を用いて，
+
+$$
+    D\left(\omega, \Omega^{\prime}\right)=\sum_{n=0}^{\infty} \sum_{m=-n}^{n} d_{n}(k r) P_{n m}(\omega) Y_{n}^{m}\left(\Omega^{\prime}\right)
+$$
+
+のように一般化して表せる．
+
+
+\bibliographystyle{abbrv}
+\bibliography{refs}
+
+\end{document}

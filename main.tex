@@ -1,4 +1,4 @@
-\documentclass[a4paper,12pt]{jsarticle}
+\documentclass[a4paper]{jsarticle}
 \usepackage{amsmath}
 
 \begin{document}
@@ -8,12 +8,12 @@
 \date{\today}
 \maketitle
 
-本資料では球状マイクロホンアレイ信号をバイノーラル再生する手法について，\cite{Andersson_undated-qg}を中心に紹介する．
+本資料では球状マイクロホンアレイ信号をバイノーラル再生する手法についての近年の動向を紹介する．
 
 \section{はじめに}
 従来のバイノーラル録音ではダミーヘッドを用いて行うものが多いが，
 ダミーヘッドを用いて行うバイノーラル録音ではある一方向に関する信号しか再生することができない．
-そこで，音場の任意の方向におけるバイノーラル信号を再生するために原音場の信号や頭部伝達関数の球面調和展開を利用する手法が提案されている\cite{Andersson_undated-qg}, \cite{Noisternig2003-ug}, \cite{Otani2020-cg}, \cite{Schorkhuber2018-ql}, \cite{Zaunschirm2018-mn}．
+そこで\cite{Rafaely2010-ea}で提案された球面調和領域にてIACCを算出する理論を基礎とした，原音場の信号および頭部伝達関数の球面調和展開を利用し，音場の任意の方向におけるバイノーラル信号を再生する手法が提案されている\cite{Andersson_undated-qg}, \cite{Noisternig2003-ug}, \cite{Otani2020-cg}, \cite{Schorkhuber2018-ql}, \cite{Sheaffer2014-bo}, \cite{Zaunschirm2018-mn}．
 
 本資料では球状マイクロホンアレイで録音した原音場における信号をバイノーラル再生する手法について，\cite{Andersson_undated-qg}を中心にその一部を紹介する．
 
@@ -34,14 +34,18 @@
     \frac{d^{2} \Phi}{d \varphi^{2}}+m^{2} \Phi                                                                                                          & =0
 \end{align*}
 
-が得られる．これらの微分方程式の解は動径方向，角度方向についてそれぞれ得られる．動径方向については解として以下の第１種および第２種球ベッセル関数によって与えられる．
+が得られる．
+これらの微分方程式の解は動径方向，角度方向についてそれぞれ得られる．
+動径方向については解として以下の第１種および第２種球ベッセル関数によって与えられる．
 
 \begin{align*}
     j_{n}(k r) & =\sqrt{\frac{\pi}{2 k r}} J_{n+1 / 2}(k r) \\
     y_{n}(k r) & =\sqrt{\frac{\pi}{2 k r}} Y_{n+1 / 2}(k r)
 \end{align*}
 
-ここで$J, Y$はそれぞれ第１種および第２種ベッセル関数である．角度成分に関しては，球面調和関数$Y_{n}^{m}(\theta, \varphi)$が用いられるが，その具体的な式は文献によって異なる．代用的なものとして以下の３つの式が用いられている．\cite{Andersson_undated-qg}では式\ref{complex-asymmetric}は複素非対称型(complex asymmetric)，式\ref{complex-symmetric}は複素対象型(complex symmetric)，式\ref{real-convention}は実数型(real convention)と呼んでいる．
+ここで$J, Y$はそれぞれ第１種および第２種ベッセル関数である．
+角度成分に関しては，球面調和関数$Y_{n}^{m}(\theta, \varphi)$が用いられるが，その具体的な式は文献によって異なる．代用的なものとして以下の３つの式が用いられている．
+\cite{Andersson_undated-qg}では式\ref{complex-asymmetric}は複素非対称型(complex asymmetric)，式\ref{complex-symmetric}は複素対象型(complex symmetric)，式\ref{real-convention}は実数型(real convention)と呼んでいる．
 \begin{align}
     Y_{n}^{m} & =\sqrt{\frac{2 n+1}{4 \pi} \frac{(n-m) !}{(n+m) !}} P_{n}^{m}(\cos \theta) e^{i m \varphi} \label{complex-asymmetric}                                          \\
     Y_{n}^{m} & =(-1)^{m} \sqrt{\frac{2 n+1}{4 \pi} \frac{(n-|m|) !}{(n+|m|) !}} P_{n}^{|m|}(\cos \theta) e^{i m \varphi}  \label{complex-symmetric}                           \\
@@ -65,16 +69,18 @@ $$
 $$
     \left(Y_{n}^{m}\right)^{*}=Y_{n}^{-m}
 $$
-となる．自明であるが，実数型の球面調和関数とその複素共役は等しい値をとる．
+となる．
+自明であるが，実数型の球面調和関数とその複素共役は等しい値をとる．
 
 \subsection{球面調和関数展開}
-波動方程式を満たす任意の関数$f$は球面調和関数の線形結合で表せる．すなわち，展開係数$P_{nm}$について以下が成り立つ．
+波動方程式を満たす任意の関数$f$は球面調和関数の線形結合で表せる．
+すなわち展開係数$P_{nm}$について以下が成り立つ．
 \begin{equation}
     \label{spherical-expansion}
     f=\sum_{n=0}^{\infty} \sum_{m=-n}^{n} P_{n m} Y_{n}^{m}
 \end{equation}
 
-展開係数$P_{nm}$を得るには，両辺の$Y_{n}^{m}$との内積を取り，以下の積分を実行すればよい．
+展開係数$P_{nm}$を得るには両辺の$Y_{n}^{m}$との内積を取り，以下の積分を実行すればよい．
 
 \begin{equation}
     \label{expansion-integral}
@@ -86,7 +92,8 @@ $S$が開球の場合，異なる半径$r, r_0$を持つ球面上の積分で得
 $$
     P_{n m}(r)=\frac{j_{n}(k r)}{j_{n}\left(k r_{0}\right)} P_{n m}\left(r_{0}\right)
 $$
-となる\cite{EGW99}．$S$が剛球の場合や$f$が音圧を表さない場合(カージオイド型の指向性をもつマイクロホンで収録した信号など)は異なる関係式で表される．
+となる\cite{EGW99}．
+$S$が剛球の場合や$f$が音圧を表さない場合(カージオイド型の指向性をもつマイクロホンで収録した信号など)は異なる関係式で表される．
 
 式\ref{expansion-integral}における球面$S$の特性の違いを吸収するフィルタとして，動径フィルタ(radial filter)$d_n$が導入される．
 開球面については，
@@ -101,16 +108,19 @@ $$
 $$
     d_{n}=\frac{1}{4 \pi i^{n}\left(j_{n}\left(k r_{0}\right)-\frac{j_{n}^{\prime}\left(k r_{0}\right)}{h_{n}^{\prime(2)}\left(k r_{0}\right)} h_{n}^{(2)}\left(k r_{0}\right)\right)}
 $$
-となる．なお，$h_{n}^{(2)}$は第２種球ハンケル関数である．
+となる．
+なお，$h_{n}^{(2)}$は第２種球ハンケル関数である．
 
 \subsection{平面波分解}
-波動方程式の解の１つの形として平面波がある．平面波の和も波動方程式を満たすため，波動方程式を満たす任意の関数は平面波の線形結合で表せると考えられる．いま，連続面を考えると波動方程式を満たす関数$f$は以下のように書ける．
+波動方程式の解の１つの形として平面波がある．平面波の和も波動方程式を満たすため，波動方程式を満たす任意の関数は平面波の線形結合で表せると考えられる．
+いま，連続面を考えると波動方程式を満たす関数$f$は以下のように書ける．
 \begin{equation}
     \label{plane-wave-decomposition}
     f(\omega, \Omega)=\int_{S} D\left(\omega, \Omega^{\prime}\right) P\left(\Omega^{\prime}, \Omega\right) d S
 \end{equation}
 
-ここで，$P$は角度$\Omega$で観測される入射角$\Omega^\prime$の大きさ１の平面波を表し，$D$は角周波数$\omega$における入射角$\Omega^\prime$の大きさを表す．平面波$P$は開球面において以下のように球面調和展開できる．
+ここで，$P$は角度$\Omega$で観測される入射角$\Omega^\prime$の大きさ１の平面波を表し，$D$は角周波数$\omega$における入射角$\Omega^\prime$の大きさを表す．
+平面波$P$は開球面において以下のように球面調和展開できる．
 
 \begin{equation}
     \label{P_decomposition}
@@ -135,6 +145,102 @@ $$
 
 のように一般化して表せる．
 
+\subsection{頭部伝達関数}
+
+頭部伝達関数はある方向から到来する平面波に対する耳の位置での特性とみなすことができる．すなわち人間が聴取する耳の位置での信号$S^{l, r}$は平面波分解$D$を用いて
+\begin{equation}
+    \label{hrtf_pw}
+    S^{l, r}=\int_{S} H^{l, r}(\omega, \Omega) D(\omega, \Omega) d \Omega
+\end{equation}
+で表せる．
+ここで$D$は球面上で定義される関数であり，その複素共役を球面調和展開すると展開係数$(D^*)_{nm}$は
+$$
+    \begin{aligned}
+        \left(D^{*}\right)_{n m} & =\int_{S} D^{*}(\Omega) Y_{n}^{m}(\Omega)^{*} d \Omega                                                                                                                                                            \\
+                                 & =\int_{S} \sum_{n^{\prime}=0}^{\infty} \sum_{m^{\prime}=-n^{\prime}}^{n^{\prime}} d_{n}^{*}(k r) P_{n^{\prime} m^{\prime}}^{*} Y_{n^{\prime}}^{m^{\prime}}(\Omega)^{*} Y_{n}^{m}(\Omega)^{*} d \Omega             \\
+                                 & =\int_{S} \sum_{n^{\prime}=0}^{\infty} \sum_{m^{\prime}=-n^{\prime}}^{n^{\prime}} d_{n}^{*}(k r) P_{n^{\prime} m^{\prime}}^{*} a_{m^{\prime}} Y_{n^{\prime}}^{-m^{\prime}}(\Omega) Y_{n}^{m}(\Omega)^{*} d \Omega
+    \end{aligned}
+$$
+となる．
+ここで$a_{m'}$は用いる球面調和関数$Y_{n}^m$の形に依存する係数であり，複素非対称型を用いる場合$a_{m'} = (-1)^{m'}$となり，複素対象型を用いる場合は$a_{m'}=1$となる．
+実数型を用いる場合は$(D^*)_{nm}$を求める過程自体が不要となる．球面調和関数の正規直交性より，
+
+$$
+    \left(D^{*}\right)_{n m}=d_{n}^{*}(k r) P_{n(-m)}^{*} a_{m}
+$$
+
+を得る．
+式\ref{hrtf_pw}に平面波分解の展開式および頭部伝達関数の球面調和展開を代入し，球面調和関数の正規直交性を再度利用すれば
+\begin{equation}
+    \begin{aligned}
+        \label{binaural_signal}
+        S^{l, r} & =\int_{S} D(\omega, \Omega)H^{l, r}(\omega, \Omega)  d \Omega                                                                                                                                                                                                           \\
+                 & =\int_{S}\left(\sum_{n=0}^{\infty} \sum_{m=-n}^{n} d_{n}^{*}(k r) P_{n(-m)}^{*} Y_{n}^{m}(\Omega) a_{m}\right)^{*} \sum_{n^{\prime}=0}^{\infty} \sum_{m^{\prime}=-n^{\prime}}^{n^{\prime}} H_{n^{\prime} m^{\prime}}^{l,r} Y_{n^{\prime}}^{m^{\prime}}(\Omega) d \Omega \\
+                 & =\sum_{n=0}^{\infty} \sum_{m=-n}^{n} d_{n} a_{m} P_{n(-m)} H_{n m}^{l,r}
+    \end{aligned}
+\end{equation}
+
+が得られる．したがって原音場の球面調和展開係数と頭部伝達関数の球面調和展開係数を計算することにより，対応するバイノーラル信号が得られることが分かる．
+球面調和関数に実数型を用いる場合は，球面調和関数の正規直交性を利用する際に複素共役を用いる必要がないため$D$の複素共役の展開係数を計算しなくてよく，この場合$S^{l, r}$は
+
+\begin{equation}
+    \begin{aligned}
+        S^{l, r} & =\int_{S} D(\omega, \Omega)H^{l, r}(\omega, \Omega)  d \Omega                                                                                                                                                                                                \\
+                 & =\int_{S}\sum_{n=0}^{\infty} \sum_{m=-n}^{n} d_{n} P_{n m}(\omega) Y_{n}^{m}\left(\Omega^{\prime}\right)\sum_{n^{\prime}=0}^{\infty} \sum_{m^{\prime}=-n^{\prime}}^{n^{\prime}} H_{n^{\prime} m^{\prime}}^{l,r} Y_{n^{\prime}}^{m^{\prime}}(\Omega) d \Omega \\
+                 & =\sum_{n=0}^{\infty} \sum_{m=-n}^{n} d_{n} P_{n m} H_{n m}
+    \end{aligned}
+\end{equation}
+
+として得られる．
+
+バイノーラル信号の水平面上での回転は式\ref{binaural_signal}の展開係数に複素指数関数を掛けることによって実現できる．
+すなわち，音場に対して頭部を時計回りに角度$\alpha$だけ回転した場合のバイノーラル信号は
+
+\begin{equation}
+    \label{rotation}
+    S^{l, r}(\alpha)=\sum_{n=0}^{\infty} \sum_{m=-n}^{n} d_{n} a_{m} P_{n(-m)} H_{n m} e^{-j m \alpha}
+\end{equation}
+
+として得られる．
+なお，式\ref{rotation}導出は量子力学などで用いるWignerのD行列を用いており本資料（著者の理解）の範囲を大きく超えるため省略する．
+
+\subsection{離散化}
+
+ここでは上記の連続信号での議論を，コンピュータ上でバイノーラル信号を得るために離散化する過程を示す．
+
+球面調和展開係数を$N$次で打ち切ると，式\ref{spherical-expansion}は以下のように書ける．
+
+$$
+    f(\Omega)=\sum_{n=0}^{N} \sum_{m=-n}^{n} P_{n m} Y_{n}^{m}(\Omega)
+$$
+
+さらに，音場内に観測点を$l$個設定すれば上式は以下のように行列形式で表現できる．
+$$
+    \mathbf{Y P}=\mathbf{F}
+$$
+
+ここで，$\mathbf{Y}$は各測定点での角度および次数における球面調和関数の値を格納した$l \times (N+1)^2$行列，
+$\mathbf{P}$は球面調和展開係数を格納した$(N+1)^2 \times 1$ベクトル，
+そして$\mathbf{F}$は各観測点における音場を表す値（音圧に限らない）を格納する$l \times 1$行列である．
+
+この連立方程式は$\mathbf{P}$を未知数としたとき，$l > (N+1)^2$の場合優決定系（overdermined）となる．
+この場合，一般的には$\mathbf{P}$の代わりに$|\mathbf{F} - \mathbf{Y}\hat{\mathbf{P}}|^2$を最小にする最小二乗解$\hat{\mathbf{P}}$を求める．
+$\hat{\mathbf{P}}$は$\mathbf{Y}$のMoore-Penrose擬似逆行列$\mathbf{Y}^\dagger$を用いて
+
+$$
+    \hat{\boldsymbol{P}}=\boldsymbol{Y}^{\dagger} \boldsymbol{F}
+$$
+
+として求めることができる．
+観測点以外の音場内の点での再現性能を高めるため，Tikonovの正則化がしばしば用いられる．
+正則化を行う場合，最小化する目的関数は$|\boldsymbol{F}-\boldsymbol{Y} \hat{\boldsymbol{P}}|^{2}+\lambda|\boldsymbol{D} \hat{\boldsymbol{P}}|$となる．
+ここで，$\mathbf{D}$は\cite{Duraiswaini2004-fy}で提案されている，対角要素が$d_{n, n} = 1 + n(n+1)$となるような対角行列である．
+$\mathbf{D}$をこのように定めることで高次の係数に低次の係数に比べて大きいペナルティを与えることになり，補間性能が向上することが報告されている\cite{Duraiswaini2004-fy}．
+
+この最小化問題の解は以下のように与えられる．
+$$
+    \hat{\boldsymbol{P}}=\left(\boldsymbol{Y}^{*} \boldsymbol{Y}+\lambda^{2} \boldsymbol{D}\right)^{-1} \boldsymbol{Y}^{*} \boldsymbol{F}
+$$
 
 \bibliographystyle{abbrv}
 \bibliography{refs}

@@ -13,7 +13,8 @@
 \section{はじめに}
 従来のバイノーラル録音ではダミーヘッドを用いて行うものが多いが，
 ダミーヘッドを用いて行うバイノーラル録音ではある一方向に関する信号しか再生することができない．
-そこで\cite{Rafaely2010-ea}で提案された球面調和領域にてIACCを算出する理論を基礎とした，原音場の信号および頭部伝達関数の球面調和展開を利用し，音場の任意の方向におけるバイノーラル信号を再生する手法が提案されている\cite{Andersson_undated-qg}, \cite{Noisternig2003-ug}, \cite{Otani2020-cg}, \cite{Schorkhuber2018-ql}, \cite{Sheaffer2014-bo}, \cite{Zaunschirm2018-mn}．
+また原音場から得られた球面調和展開係数をデコードし，仮想音源に対して頭部伝達関数を畳み込む手法\cite{Noisternig2003-ug}も存在するが，
+そこで\cite{Rafaely2010-ea}で提案された球面調和領域にてIACCを算出する理論を基礎とした，原音場の信号および頭部伝達関数の球面調和展開を利用し，音場の任意の方向におけるバイノーラル信号を再生する手法が提案されている\cite{Andersson_undated-qg}, \cite{Otani2020-cg}, \cite{Schorkhuber2018-ql}, \cite{Sheaffer2014-bo}, \cite{Zaunschirm2018-mn}．
 
 本資料では球状マイクロホンアレイで録音した原音場における信号をバイノーラル再生する手法について，\cite{Andersson_undated-qg}を中心にその一部を紹介する．
 
@@ -202,7 +203,7 @@ $$
 \end{equation}
 
 として得られる．
-なお，式\ref{rotation}導出は量子力学などで用いるWignerのD行列を用いており本資料（著者の理解）の範囲を大きく超えるため省略する．
+なお，式\ref{rotation}導出は量子力学などで用いるWignerのD行列を用いており\cite{Bernschutz2016-be}本資料（著者の理解）の範囲を大きく超えるため省略する．
 
 \subsection{離散化}
 

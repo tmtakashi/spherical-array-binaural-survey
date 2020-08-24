@@ -1,4 +1,5 @@
 \documentclass[a4paper]{jsarticle}
+\usepackage[dvipdfm]{graphicx}
 \usepackage{amsmath}
 
 \begin{document}
@@ -17,7 +18,7 @@
 それらを重ね合わせてバイノーラル信号を得る手法\cite{Jot1999-bt, Noisternig2003-ug}（virtual loudspeaker approach）
 も存在する．
 しかし，この手法は仮想音源をデコードし，さらに頭部伝達関数を畳み込む必要があることから計算コストが高い．またバイノーラル信号の質が原音場の観測点と頭部伝達関数の観測点の位置に依存しやすいという問題もある．
-そこで\cite{Rafaely2010-ea}で提案された球面調和領域にてIACCを算出する理論を基礎とした，原音場の信号および頭部伝達関数の球面調和展開を利用し，音場の任意の方向におけるバイノーラル信号を再生する手法が提案されている\cite{Andersson_undated-qg,Bernschutz2016-be,Otani2020-cg,Schorkhuber2018-ql, Sheaffer2014-bo, Zaunschirm2018-mn}．
+そこで\cite{Rafaely2010-ea}で提案された球面調和領域にてIACCを算出する理論を基礎とした，原音場の信号および頭部伝達関数の球面調和展開を利用し，音場の任意の方向におけるバイノーラル信号を再生する手法が提案されている\cite{Andersson_undated-qg, Ben-Hur2017-gm, Bernschutz2016-be,Otani2020-cg,Schorkhuber2018-ql, Sheaffer2014-bo, Zaunschirm2018-mn}．
 
 本資料では球状マイクロホンアレイで録音した原音場における信号をバイノーラル再生する手法について，\cite{Andersson_undated-qg}を中心にその一部を紹介する．
 
@@ -246,12 +247,62 @@ $$
     \hat{\boldsymbol{P}}=\left(\boldsymbol{Y}^{*} \boldsymbol{Y}+\lambda^{2} \boldsymbol{D}\right)^{-1} \boldsymbol{Y}^{*} \boldsymbol{F}
 $$
 
+同様に，頭部伝達関数に関しても球面調和展開係数$H_{nm}^{l, r}$を計算すれば，式\ref{binaural_signal}を用いてバイノーラル信号を計算することができる．
+
 \section{課題および改善手法}
 式\ref{binaural_signal}が示すように，球面調和展開を利用したバイノーラル信号の生成では原音場と頭部伝達関数の球面調和展開次数を一致させる必要がある．
 一般に，頭部伝達関数の測定点の数は片耳だけでも数百に及ぶが，原音場の収録においてそれほどの数のマイクロホンを用いたマイクロホンアレイを用意するのは非現実的であり，それに合わせて頭部伝達関数の展開次数も減らす必要がある．
-したがって，頭部伝達関数の展開次数の削減により定位性能や広がり感の低下，および高域でのエイリアシングが生じる．
+したがって，頭部伝達関数の展開次数の削減により定位性能や広がり感の低下\cite{Avni2013-sr}，および高域での減衰が生じる\cite{Avni2013-sr, Ben-Hur2017-gm}（\cite{Ben-Hur2017-gm}のFig.1を参照）．
 
 本章では上記の問題点の改善手法の概説を行う．
+
+\subsection{Spherical Head Filter Method \cite{Ben-Hur2017-gm,Sheaffer2014-bo}}
+
+上記の高域の減衰が生じる理由を述べるために，頭部を剛球で近似することを考える．
+以下，\cite{Ben-Hur2017-gm}での説明を参考にした．
+
+半径$r_0$の剛球面上のある点$\Omega$に任意の方向$\Omega_0$から到来する単位振幅を持つ平面波による音圧は
+
+\begin{equation}
+    \label{rigid_sphere_pressure}
+    p\left(k r_{0}, \Omega, \Omega_{0}\right)=\sum_{n=0}^{N} \sum_{m=-n}^{n} b_{n}\left(k r_{0}\right)\left[Y_{n}^{m}\left(\Omega_{0}\right)\right]^{*} Y_{n}^{m}(\Omega)
+\end{equation}
+
+で与えられる．ここで$b_n(kr_0)$は放射関数（radial function）であり，剛球では以下のように与えられる．
+
+$$
+    b_{n}\left(k r_{0}\right)=4 \pi i^{n}\left[j_{n}\left(k r_{0}\right)-\frac{j_{n}\left(k r_{0}\right)}{h_{n}^{\prime}\left(k r_{0}\right)} h_{n}\left(k r_{0}\right)\right]
+$$
+
+拡散音場を仮定すれば，球面上のある点の音圧は球面上の音圧の平均で与えられると考えられる．したがって球面上のある点$\Omega$での音圧は
+
+$$
+    \bar{p}\left(k r_{0}, \Omega\right)=\sqrt{\frac{1}{4 \pi} \int_{\Omega_{0} \in S^{2}}\left|p\left(k r_{0}, \Omega, \Omega_{0}\right)\right|^{2} d \Omega_{0}}
+$$
+
+式\ref{rigid_sphere_pressure}を代入して整理すると，以下のように点$\Omega$での音圧が球面調和展開次数$N$の関数として得られる．
+
+
+\begin{equation}
+    \label{rigid_sphere_pressure_avg}
+    \left.\bar{p}\left(k r_{0}\right)\right|_{N}=\frac{1}{4 \pi} \sqrt{\sum_{n=0}^{N}(2 n+1)\left|b_{n}\left(k r_{0}\right)\right|^{2}}
+\end{equation}
+
+図\ref{high_freq_rolloff}に式\ref{rigid_sphere_pressure_avg}を次数$N$ごとにプロットしたものを示す．
+球面調和展開次数$N$が低くなるほど，高域の減衰が著しくなることがわかる．
+
+\begin{figure}[htbp]
+    \centering
+    \label{high_freq_rolloff}
+    \includegraphics[clip,width=10cm]{./high_freq_rolloff.png}
+    \caption{球面調和展開次数$N$と剛球上の音圧（式\ref{rigid_sphere_pressure_avg}）の関係（\cite{Ben-Hur2017-gm}のFig.2より引用）}
+\end{figure}
+
+\cite{Sheaffer2014-bo}ではこの高域での減衰を補正するためのフィルタが提案されている．
+具体的には，低い展開次数$N$によって生成されたバイノーラル信号を補正するためのフィルタは以下のように与えられる．
+$$
+    \left.H(k)\right|_{N \rightarrow N_{h}}=\frac{\overline{p(k r)}_{N_{h}}}{p(k r)_{N}}
+$$
 
 \bibliographystyle{abbrv}
 \bibliography{refs}

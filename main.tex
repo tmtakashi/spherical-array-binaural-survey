@@ -1,5 +1,7 @@
 \documentclass[a4paper]{jsarticle}
+\usepackage[numbers]{natbib}
 \usepackage[dvipdfm]{graphicx}
+\usepackage{float}
 \usepackage{amsmath}
 
 \begin{document}
@@ -20,7 +22,7 @@
 しかし，この手法は仮想音源をデコードし，さらに頭部伝達関数を畳み込む必要があることから計算コストが高い．またバイノーラル信号の質が原音場の観測点と頭部伝達関数の観測点の位置に依存しやすいという問題もある．
 そこで\cite{Rafaely2010-ea}で提案された球面調和領域にてIACCを算出する理論を基礎とした，原音場の信号および頭部伝達関数の球面調和展開を利用し，音場の任意の方向におけるバイノーラル信号を再生する手法が提案されている\cite{Andersson_undated-qg, Ben-Hur2017-gm, Bernschutz2016-be,Otani2020-cg,Schorkhuber2018-ql, Sheaffer2014-bo, Zaunschirm2018-mn}．
 
-本資料では球状マイクロホンアレイで録音した原音場における信号をバイノーラル再生する手法について，\cite{Andersson_undated-qg}を中心にその一部を紹介する．
+本資料では球状マイクロホンアレイで録音した原音場における信号をバイノーラル再生する最近手法について，その概要を紹介する．
 
 \section{理論}
 以下，\cite{Andersson_undated-qg}を参考に球状マイクロホンアレイ信号および頭部伝達関数からバイノーラル信号を得るための理論について述べる．
@@ -249,6 +251,9 @@ $$
 
 同様に，頭部伝達関数に関しても球面調和展開係数$H_{nm}^{l, r}$を計算すれば，式\ref{binaural_signal}を用いてバイノーラル信号を計算することができる．
 
+また\cite{Schorkhuber2018-ql}や\cite{Zaunschirm2018-mn}ではバイノーラル信号を$\hat{b}_{l, r}(\omega) =\boldsymbol{w}_{l, r}^{\mathrm{H}}(\omega) \boldsymbol{a}(\omega)$のように，
+原音場の展開係数ベクトル$\boldsymbol{a}(\omega)$とバイノーラル変換ベクトル$\boldsymbol{w}_{l, r}の$内積の形で書かれている．
+
 \section{課題および改善手法}
 式\ref{binaural_signal}が示すように，球面調和展開を利用したバイノーラル信号の生成では原音場と頭部伝達関数の球面調和展開次数を一致させる必要がある．
 一般に，頭部伝達関数の測定点の数は片耳だけでも数百に及ぶが，原音場の収録においてそれほどの数のマイクロホンを用いたマイクロホンアレイを用意するのは非現実的であり，それに合わせて頭部伝達関数の展開次数も減らす必要がある．
@@ -293,9 +298,9 @@ $$
 
 \begin{figure}[htbp]
     \centering
-    \label{high_freq_rolloff}
     \includegraphics[clip,width=10cm]{./high_freq_rolloff.png}
     \caption{球面調和展開次数$N$と剛球上の音圧（式\ref{rigid_sphere_pressure_avg}）の関係（\cite{Ben-Hur2017-gm}のFig.2より引用）}
+    \label{high_freq_rolloff}
 \end{figure}
 
 \cite{Sheaffer2014-bo}ではこの高域での減衰を補正するためのフィルタが提案されている．
@@ -304,7 +309,57 @@ $$
     \left.H(k)\right|_{N \rightarrow N_{h}}=\frac{\overline{p(k r)}_{N_{h}}}{p(k r)_{N}}
 $$
 
-\bibliographystyle{abbrv}
+\subsection{High-Frequency Time-Aligned Binaural Decoding
+    (TAC)\cite{Schorkhuber2018-ql,Zaunschirm2018-mn}}
+\cite{Zaunschirm2018-mn}で示されているように，音場の高周波成分のエネルギーは球面調和展開したときの高次の展開係数に含まれている．その様子を図\ref{high_order_energy}に示す．
+図\ref{high_order_energy}はある頭部伝達関数データセットを球面調和展開したときの展開次数ごとの正規化エネルギーをプロットしており，低次の展開係数では高周波成分のエネルギーを含みきれておらず，高域のエネルギーを十分に再現するには展開次数を30まで上げる必要があることがわかる．
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[clip,width=10cm]{./high_order_energy.png}
+    \caption{ある頭部伝達関数データセットを球面調和展開したときの展開次数ごとの正規化エネルギーをプロットしたグラフ（\cite{Zaunschirm2018-mn}のFig.1より引用）}
+    \label{high_order_energy}
+\end{figure}
+
+二重理論（duplex theory）によれば，ヒトが両耳間時間差（ITD）をほとんど低域でのみ音源定位の手がかりとして用いている\cite{roginska2017immersive}．
+そこで\citeauthor{Zaunschirm2018-mn}\cite{Zaunschirm2018-mn}は高域での各周波数の位相を均一化し，
+必要な展開次数を削減する手法を提案した．
+位相均一化処理は以下のように定式化される．
+
+$$
+    h_{l, r}\left(\Omega_{p}, \omega\right)=h^{l, r}\left(\Omega_{p}, \omega\right) A_{p}^{l, r}(\omega)
+$$
+
+オールパスフィルタ$A_{p}^{l, r}(\omega)$の周波数特性は
+$$
+    A_{p}^{l, r}(\omega)=\left\{\begin{array}{ll}
+        1                                                    & \text { for } \omega<\omega_{c}      \\
+        e^{-i\left(\omega-\omega_{c}\right) \tau_{p}^{l, r}} & \text { for } \omega \geq \omega_{c}
+    \end{array}\right.
+$$
+
+$\omega_c=2\pi f_c$はカットオフ角周波数，$\tau_{p}^{l, r}$は半径$r_H$の頭部の中心に対する点$p$（耳の位置）での信号の位相差である．
+
+$$
+    \tau_{p}^{r}=\cos \left(\theta_{p}\right) \sin \left(\phi_{p}\right) r_{H} c^{-1}, \quad \tau_{p}^{l}=-\tau_{p}^{r}
+$$
+
+図\ref{high_order_energy_improved}にTAC適応後の頭部伝達関数の展開次数ごとのエネルギー分布を示す．
+図\ref{high_order_energy}と比較すると，高域でのエネルギーが低次元の展開次数に集中しており，展開次数を15ほど取ればTAC適応後の頭部伝達関数の高域のエネルギーを再現できることがわかる．
+\begin{figure}[H]
+    \centering
+    \includegraphics[clip,width=10cm]{./high_order_energy_improved.png}
+    \caption{カットオフ周波数1.5kHzでTACを適応した頭部伝達関数データセットに対する展開次数ごとの正規化エネルギーをプロットしたグラフ（\cite{Zaunschirm2018-mn}のFig.4より引用）}
+    \label{high_order_energy_improved}
+\end{figure}
+\cite{Schorkhuber2018-ql}によれば，カットオフ周波数は2kHzほどあれば主観的にも十分な結果が得られる．
+
+
+
+
+
+
+\bibliographystyle{plainnat}
 \bibliography{refs}
 
 \end{document}

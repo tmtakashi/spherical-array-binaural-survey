@@ -1,6 +1,7 @@
 \documentclass[a4paper]{jsarticle}
 \usepackage[numbers]{natbib}
-\usepackage[dvipdfm]{graphicx}
+\usepackage[dvipdfmx]{graphicx}
+\usepackage[dvipdfmx]{color}
 \usepackage{float}
 \usepackage{amsmath}
 
@@ -296,9 +297,9 @@ $$
 図\ref{high_freq_rolloff}に式\ref{rigid_sphere_pressure_avg}を次数$N$ごとにプロットしたものを示す．
 球面調和展開次数$N$が低くなるほど，高域の減衰が著しくなることがわかる．
 
-\begin{figure}[htbp]
+\begin{figure}[H]
     \centering
-    \includegraphics[clip,width=10cm]{./high_freq_rolloff.png}
+    \includegraphics[clip,width=10cm]{high_freq_rolloff.png}
     \caption{球面調和展開次数$N$と剛球上の音圧（式\ref{rigid_sphere_pressure_avg}）の関係（\cite{Ben-Hur2017-gm}のFig.2より引用）}
     \label{high_freq_rolloff}
 \end{figure}
@@ -314,7 +315,7 @@ $$
 \cite{Zaunschirm2018-mn}で示されているように，音場の高周波成分のエネルギーは球面調和展開したときの高次の展開係数に含まれている．その様子を図\ref{high_order_energy}に示す．
 図\ref{high_order_energy}はある頭部伝達関数データセットを球面調和展開したときの展開次数ごとの正規化エネルギーをプロットしており，低次の展開係数では高周波成分のエネルギーを含みきれておらず，高域のエネルギーを十分に再現するには展開次数を30まで上げる必要があることがわかる．
 
-\begin{figure}[htbp]
+\begin{figure}[H]
     \centering
     \includegraphics[clip,width=10cm]{./high_order_energy.png}
     \caption{ある頭部伝達関数データセットを球面調和展開したときの展開次数ごとの正規化エネルギーをプロットしたグラフ（\cite{Zaunschirm2018-mn}のFig.1より引用）}

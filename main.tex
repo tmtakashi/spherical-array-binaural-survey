@@ -19,7 +19,10 @@
 従来手法として，原音場から得られた球面調和展開係数をデコードし，仮想音源からの信号にに対して頭部伝達関数を畳み込み，
 それらを重ね合わせてバイノーラル信号を得る手法\cite{Jot1999-bt, Noisternig2003-ug}（virtual loudspeaker approach）
 も存在する．
-しかし，この手法は仮想音源をデコードし，さらに頭部伝達関数を畳み込む必要があることから計算コストが高い．またバイノーラル信号の質が原音場の観測点と頭部伝達関数の観測点の位置に依存しやすいという問題もある．
+しかし，この手法は仮想音源をデコードし，さらに頭部伝達関数を畳み込む必要があることから計算コストが高く，
+スピーカー用の技術を流用することがバイノーラル信号を生成する最適な手段であるかどうかは疑問が残る\cite{Schorkhuber2018-ql}．
+またバイノーラル信号の質が原音場の観測点と頭部伝達関数の観測点の位置や間隔に依存しやすいという問題もある．
+具体的には，細かい頭部伝達関数のグリッドを導入すると前後方向での信号の高域が減衰し，荒い頭部伝達関数のグリッドを導入しても再現音場の空間的な質がグリッドのレイアウトに依存しやすくなる\cite{Zotter2019-ix}．
 そこで\cite{Rafaely2010-ea}で提案された球面調和領域にてIACCを算出する理論を基礎とした，原音場の信号および頭部伝達関数の球面調和展開を利用し，音場の任意の方向におけるバイノーラル信号を再生する手法が提案されている\cite{Andersson_undated-qg, Ben-Hur2017-gm, Bernschutz2016-be,Otani2020-cg,Schorkhuber2018-ql, Sheaffer2014-bo, Zaunschirm2018-mn}．
 
 本資料では球状マイクロホンアレイで録音した原音場における信号をバイノーラル再生する最近手法について，その概要を紹介する．
@@ -310,7 +313,7 @@ $$
 $$
 
 \subsection{High-Frequency Time-Aligned Binaural Decoding
-    (TAC)\cite{Schorkhuber2018-ql,Zaunschirm2018-mn}}
+    (TA)\cite{Schorkhuber2018-ql,Zaunschirm2018-mn}}
 \cite{Zaunschirm2018-mn}で示されているように，音場の高周波成分のエネルギーは球面調和展開したときの高次の展開係数に含まれている．その様子を図\ref{high_order_energy}に示す．
 図\ref{high_order_energy}はある頭部伝達関数データセットを球面調和展開したときの展開次数ごとの正規化エネルギーをプロットしており，低次の展開係数では高周波成分のエネルギーを含みきれておらず，高域のエネルギーを十分に再現するには展開次数を30まで上げる必要があることがわかる．
 
@@ -346,6 +349,7 @@ $$
 
 図\ref{high_order_energy_improved}にTAC適応後の頭部伝達関数の展開次数ごとのエネルギー分布を示す．
 図\ref{high_order_energy}と比較すると，高域でのエネルギーが低次元の展開次数に集中しており，展開次数を15ほど取ればTAC適応後の頭部伝達関数の高域のエネルギーを再現できることがわかる．
+
 \begin{figure}[H]
     \centering
     \includegraphics[clip,width=10cm]{./high_order_energy_improved.png}
@@ -354,8 +358,83 @@ $$
 \end{figure}
 \cite{Schorkhuber2018-ql}によれば，カットオフ周波数は2kHzほどあれば主観的にも十分な結果が得られる．
 
+\subsection{Diffuse-field Covariance-Constrained Binaural Renderer (TAC) \cite{Zaunschirm2018-mn}}
 
+前節で提案されたTAに加え，\citeauthor{Zaunschirm2018-mn}\cite{Zaunschirm2018-mn}は音場の拡散性を考慮し，
+両耳の頭部伝達関数の共分散行列を用いて最適なバイノーラル変換行列を算出する手法を提案している．
+以下，\cite{Zaunschirm2018-mn}で提案された手法の概略を述べる．
 
+遠距離場から周波数$\omega$, 角度$\Omega$から到来する原音場での音源を$s(\omega, \Omega)$とし，
+頭部伝達関数を$\boldsymbol{h}(\omega, \Omega)=\left[h^{l}(\Omega, \omega), h^{r}(\Omega, \omega)\right]^{\top}$とすると，両耳での信号は
+
+$$
+    x(\omega)=\left[x^{l}(\omega), x^{r}(\omega)\right]^{\top}=\int_{S} s(\omega, \Omega) \mathbf{h(\omega, \Omega)} d \Omega
+$$
+
+対して，球面調和展開次数を$N_A$とすると，展開係数ベクトルは
+
+$$
+    \boldsymbol{a}(\omega)=\int_{S} s(\omega, \Omega) \boldsymbol{y}_{N_{A}}(\Omega) \mathrm{d} \Omega
+$$
+
+$$
+    \boldsymbol{y}_{N_{A}}(\Omega)=\left[Y_{0}^{0}(\Omega), \ldots, Y_{n}^{m}(\Omega), \ldots, Y_{N_{A}}^{N_{A}}(\Omega)\right]^{\top}
+$$
+
+と書け，バイノーラル変換行列を$\mathbf{B_{N_A}}^H(\omega)$とするとバイノーラル再現信号は$\hat{\boldsymbol{x}}(\omega)=\boldsymbol{B}_{N_{\mathrm{A}}}^{\mathrm{H}}(\omega) \boldsymbol{a}(\omega)$と表すことができる．
+原音場での両耳への入力信号$\boldsymbol{x}(\omega)$と$\hat{\boldsymbol{x}}(\omega)$の差を最小化するようなバイノーラル変換行列$\boldsymbol{B}_{N_{\mathrm{A}}}^{LS}$を求める最適化問題は以下のように定式化できる．
+
+$$
+    \boldsymbol{B}_{N_{A}}^{L S}(\omega)=\underset{\boldsymbol{B}_{N_{A}}(\omega)}{\arg \min } \int_{S}\left\|\boldsymbol{B}_{N_{A}}^{\mathrm{H}}(\omega) \boldsymbol{y}_{N_{A}}(\Omega)-\boldsymbol{h}(\omega, \Omega)\right\|_{\mathrm{F}}^{2} \mathrm{d} \Omega
+$$
+
+これを離散化すれば
+
+\begin{equation}
+    \label{least_square}
+    \boldsymbol{B}_{N_{A}}^{L S}(\omega)=\underset{\boldsymbol{B}_{N_{A}}(\omega)}{\arg \min }\left\|\left(\boldsymbol{B}_{N_{A}}^{\mathrm{H}}(\omega) \boldsymbol{Y}_{N_{A}, P}-\boldsymbol{H}(\omega)\right) \boldsymbol{W}^{1 / 2}\right\|_{\mathrm{F}}^{2}
+\end{equation}
+where
+$$
+    \begin{array}{l}
+        \boldsymbol{H}(\omega)=\left[\boldsymbol{h}_{1}(\omega), \ldots, \boldsymbol{h}_{p}(\omega), \ldots, \boldsymbol{h}_{P}(\omega)\right] \\
+        \boldsymbol{h}_{p}(\omega)=\left[h^{l}\left(\Omega_{p}, \omega\right), h^{r}\left(\Omega_{p}, \omega\right)\right]^{\mathrm{T}}        \\
+        \boldsymbol{Y}_{N_{A}, P}=\left[\boldsymbol{y}_{1}, \ldots, \boldsymbol{y}_{p}, \ldots, \boldsymbol{y}_{P}\right]                      \\
+        \boldsymbol{y}_{p}=\left[Y_{0}^{0}\left(\Omega_{p}\right), \ldots, Y_{n}^{m}\left(\Omega_{p}\right), \ldots, Y_{N_{A}}^{N_{A}}\left(\Omega_{p}\right)\right]^{\mathrm{T}}
+    \end{array}
+$$
+が得られる．$\mathbf{W}$は積分をガウス・ルジャンドル積分を用いて和に変換する際に用いる対角重み係数行列である．
+
+ところで，頭部伝達関数の両耳に関する共分散行列は以下のように書ける．
+
+$$
+    \boldsymbol{R}_{H}= \int_{S} \boldsymbol{h}(\boldsymbol{\Omega}) \boldsymbol{h}^{\mathrm{H}}(\Omega) d \Omega = \begin{pmatrix}
+        \int_{S} h^l(\boldsymbol{\Omega})^2 d \Omega                       & \int_{S} h^r(\boldsymbol{\Omega}) h^l(\boldsymbol{\Omega})d \Omega \\
+        \int_{S} h^l(\boldsymbol{\Omega}) h^r(\boldsymbol{\Omega})d \Omega & \int_{S} h^2(\boldsymbol{\Omega})^2 d \Omega                       \\
+    \end{pmatrix}
+$$
+
+これを離散化すれば，共分散行列は以下のように計算できる．
+
+$$
+    \boldsymbol{R}_{H} \cong \boldsymbol{H} \boldsymbol{W} \boldsymbol{H}^{\mathrm{H}}=\left[\begin{array}{cc}
+            r^{l l}(\omega) & r^{l r}(\omega) \\
+            r^{r l}(\omega) & r^{r r}(\omega)
+        \end{array}\right]
+$$
+
+前節のTA処理を施した頭部伝達関数行列を$\mathbf{H}^\prime$とし，式\ref{least_square}において$\mathbf{H}$の代わりに$\mathbf{H}^\prime$を用いることを考える．
+さらにバイノーラル変換行列が作る共分散行列行列が，頭部伝達関数が作る共分散行列と一致するという制約を加えるとバイノーラル変換行列は
+
+\begin{equation}
+    \label{least_square_tac}
+    \begin{array}{l}
+        \boldsymbol{B}_{N_{A}}^{T A C}=\underset{B_{N_{A}}}{\arg \min }\left\|\left(\boldsymbol{B}_{N_{A}}^{\mathrm{H}} \boldsymbol{Y}_{N_{A}, P}-\boldsymbol{H^\prime}\right) \boldsymbol{W}^{1 / 2}\right\|_{\mathrm{F}}^{2} \\
+        \text { subject to } \boldsymbol{B}_{N_{A}}^{\mathrm{H}} \boldsymbol{R}_{Y} \boldsymbol{B}_{N_{A}}=\boldsymbol{R}_{H}
+    \end{array}
+\end{equation}
+
+の解として得られる．式\ref{least_square_tac}の解の導出は煩雑であるため詳細は省くが，興味のある読者は\cite{Zaunschirm2018-mn}のSec.IIIを参照されたい．
 
 
 
